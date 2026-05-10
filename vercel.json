@@ -1,0 +1,8 @@
+{
+  "rewrites": [
+    {
+      "source": "/lp-api/:path*",
+      "destination": "https://api.lpagent.io/:path*"
+    }
+  ]
+}
