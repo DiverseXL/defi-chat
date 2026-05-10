@@ -1,0 +1,113 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ── Design Tokens ──────────────────────────────────────── */
+:root {
+  --cream: #F7F3EE;
+  --cream-dark: #EDE8E1;
+  --dark: #111111;
+  --dark-surface: #1a1a1a;
+  --accent: #1dbfb0;
+  --accent-dim: rgba(29, 191, 176, 0.1);
+  --text-primary: #1a1a1a;
+  --text-secondary: #71717a;
+  --text-muted: #a1a1aa;
+  --border-light: #e5e5e5;
+  --border-subtle: rgba(0, 0, 0, 0.06);
+}
+
+/* ── Global Reset ───────────────────────────────────────── */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  background-color: var(--cream);
+  color: var(--text-primary);
+}
+
+/* ── Chrome Text Effect ─────────────────────────────────── */
+.chrome-text {
+  background: linear-gradient(
+    180deg,
+    #d4d4d4 0%,
+    #fafafa 12%,
+    #a3a3a3 28%,
+    #d4d4d4 42%,
+    #8a8a8a 56%,
+    #bfbfbf 70%,
+    #d4d4d4 84%,
+    #f0f0f0 100%
+  );
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.chrome-text-blue {
+  background: linear-gradient(
+    180deg,
+    #8eb8d8 0%,
+    #5a8ab8 20%,
+    #7aa4c8 45%,
+    #4878a0 65%,
+    #6a98b8 85%,
+    #8eb8d8 100%
+  );
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* ── Animations ─────────────────────────────────────────── */
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-20px); }
+}
+
+@keyframes pulse-soft {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.4; }
+}
+
+@keyframes glow-pulse {
+  0%, 100% { opacity: 0.3; }
+  50% { opacity: 0.7; }
+}
+
+@keyframes grid-pan {
+  from { background-position: 0 0; }
+  to { background-position: 60px 60px; }
+}
+
+@keyframes scanline {
+  from { transform: translateY(-100%); }
+  to { transform: translateY(100vh); }
+}
+
+/* ── Utility Classes ────────────────────────────────────── */
+.hover-lift {
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+.hover-lift:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 20px 40px -12px rgba(0, 0, 0, 0.12);
+}
+
+.font-outfit {
+  font-family: 'Outfit', sans-serif;
+}
+
+.font-mono {
+  font-family: 'IBM Plex Mono', monospace;
+}

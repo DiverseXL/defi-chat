@@ -1,0 +1,127 @@
+  const handleSend = async (overrideText) => {
+    // Fix: Ensure userText is a string (onClick passes an event object)
+    const userText = (typeof overrideText === 'string' ? overrideText : input).trim()
+    if (!userText || loading) return
+
+    const activeChat = chats.find(c => c.id === activeChatId)
+    const messages = activeChat?.messages || []
+
+    const userMessage = { id: Date.now(), role: 'user', text: userText }
+    setChats((prev) =>
+      prev.map((c) =>
+        c.id === activeChatId
+          ? { 
+              ...c, 
+              title: c.title === 'New Chat' ? userText.slice(0, 28) + (userText.length > 28 ? '...' : '') : c.title,
+              messages: [...c.messages, userMessage] 
+            }
+          : c
+      )
+    )
+    setInput('')
+    setLoading(true)
+
+    try {
+      // Step 1: Discover Pools
+      const { pools, source } = await fetchTopPools(risk)
+      
+      // Step 2: Parallel Enrichment
+      const enrichPool = async (pool) => {
+        try {
+          const tokenA = pool.token0 || pool.token_x_mint || pool.tokenXMint || pool.mint_x
+          const tokenB = pool.token1 || pool.token_y_mint || pool.tokenYMint || pool.mint_y
+          
+          if (!tokenA || !tokenB) return pool
+
+          const { analyzeToken, calculateRiskLevel } = await import('../services/birdeye')
+          const { getTokenPrice } = await import('../services/jupiter')
+
+          const [securityA, priceA, priceB] = await Promise.all([
+            analyzeToken(tokenA),
+            getTokenPrice(tokenA),
+            getTokenPrice(tokenB)
+          ])
+
+          return {
+            ...pool,
+            security: securityA ? { ...securityA, risk: calculateRiskLevel(securityA) } : null,
+            tokenAPrice: priceA?.price || 0,
+            tokenBPrice: priceB?.price || 0,
+          }
+        } catch (e) {
+          console.warn(`LP Agent: Enrichment failed for pool ${pool.pool || pool.address}`, e)
+          return pool
+        }
+      }
+
+      // Smart Enrichment: Prioritize pools mentioned in user query
+      const queryTokens = userText.toUpperCase().split(/[\s/]+/)
+      const priorityPools = pools.filter(p => {
+        const sA = (p.token_x_symbol || p.token_a_symbol || p.token0_symbol || '').toUpperCase()
+        const sB = (p.token_y_symbol || p.token_b_symbol || p.token1_symbol || '').toUpperCase()
+        return queryTokens.includes(sA) || queryTokens.includes(sB)
+      })
+
+      // Combine priority pools with top pools, unique-ified
+      const poolsToEnrich = [...new Set([...priorityPools, ...pools.slice(0, 5)])].slice(0, 8)
+      const enrichedPools = await Promise.all(poolsToEnrich.map(enrichPool))
+      const remainingPools = pools.filter(p => !poolsToEnrich.find(ep => (ep.pool || ep.address) === (p.pool || p.address)))
+      const finalPools = [...enrichedPools, ...remainingPools].filter(isRealPool)
+
+      // Step 3: Fetch Portfolio & Positions (Hardened against nulls)
+      const { fetchOpenPositions, fetchPortfolioOverview, fetchTopLpers } = await import('../services/lpAgent')
+      let lpers = [], positions = [], portfolio = null
+
+      if (connected && publicKey) {
+        try {
+          const [posData, portData] = await Promise.all([
+            fetchOpenPositions(publicKey.toString()).catch(() => []),
+            fetchPortfolioOverview(publicKey.toString()).catch(() => null)
+          ])
+          positions = posData || []
+          portfolio = portData
+        } catch (e) {
+          console.error('LP Agent: Position/Portfolio fetch failed', e)
+        }
+      }
+
+      // Step 4: Intent Detection & LPer Enrichment (Hardened)
+      const isSmartMoneyIntent = /whale|smart|copy|follow|top lper/i.test(userText)
+      if (isSmartMoneyIntent && finalPools.length > 0) {
+        try {
+          const lperResults = await Promise.all(
+            finalPools.slice(0, 3).map(p => fetchTopLpers(p.pool || p.address || p.id).catch(() => []))
+          )
+          lpers = lperResults.filter(Boolean).flat().filter((v, i, a) => v && a.findIndex(t => t?.owner === v.owner) === i)
+        } catch (e) {
+          console.error('LP Agent: Whale fetch failed', e)
+        }
+      }
+
+      // Step 5: Final Price Check
+      let currentSOLPrice = solPrice
+      if (!currentSOLPrice) {
+        const { getSOLPrice } = await import('../services/jupiter')
+        currentSOLPrice = await getSOLPrice()
+      }
+
+      setIsLiveData(source === 'live')
+
+      // Step 6: AI Orchestration
+      const { text, card, type } = await askAI(userText, finalPools, lpers, positions, portfolio, currentSOLPrice, messages)
+      
+      setChats((prev) =>
+        prev.map((c) =>
+          c.id === activeChatId
+            ? { ...c, messages: [...c.messages, { id: Date.now() + 1, role: 'ai', text, card, type }] }
+            : c
+        )
+      )
+    } catch (err) {
+      console.error('LP Agent: Critical handleSend failure:', err)
+      const errorMsg = { id: Date.now() + 1, role: 'ai', text: 'Connection to Solana data nodes is currently unstable. Please check your network and try again.', card: null }
+      setChats(prev => prev.map(c => c.id === activeChatId ? { ...c, messages: [...c.messages, errorMsg] } : c))
+    } finally {
+      setLoading(false)
+    }
+  }
