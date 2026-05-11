@@ -288,3 +288,44 @@ function getMockPools() {
     },
   ]
 }
+
+export async function healthCheck() {
+  const results = {
+    lpAgent: false,
+    poolsEndpoint: false,
+    poolCount: 0,
+    firstPoolAddress: null,
+    firstPoolIsReal: false,
+    topLpersEndpoint: false,
+  }
+  console.log('Health check URL:', `${BASE_URL}/pools/discover?chain=SOL&sortBy=vol_24h&sortOrder=desc&pageSize=3`)
+  console.log('Health check API key:', API_KEY?.slice(0, 10))
+
+  try {
+    // Test pools endpoint
+    const data = await apiFetch(
+      `${BASE_URL}/pools/discover?chain=SOL&sortBy=vol_24h&sortOrder=desc&pageSize=3`
+    )
+
+    if (data?.data?.length > 0) {
+      results.lpAgent = true
+      results.poolsEndpoint = true
+      results.poolCount = data.data.length
+      results.firstPoolAddress = data.data[0]?.address || data.data[0]?.pool || 'none'
+      results.firstPoolIsReal = results.firstPoolAddress?.length >= 32 && !results.firstPoolAddress.includes('MOCK')
+
+      // Test top-lpers with first real pool
+      if (results.firstPoolIsReal) {
+        const lpersData = await apiFetch(
+          `${BASE_URL}/pools/${results.firstPoolAddress}/top-lpers?sort_order=desc&page=1&limit=3`
+        )
+        results.topLpersEndpoint = !!lpersData?.data
+      }
+    }
+  } catch (err) {
+    console.error('Health check failed:', err)
+  }
+
+  console.table(results)
+  return results
+}

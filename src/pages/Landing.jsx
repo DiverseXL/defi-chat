@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { motion, useInView } from 'framer-motion'
 
+
 const FEATURES = [
   { icon: 'psychology', title: 'Intent-Based Execution', desc: 'Type what you want in plain English. The AI understands your goal and executes the entire strategy — no manual steps.' },
   { icon: 'trending_up', title: 'Smart Money Tracking', desc: 'See what top Meteora LPers are doing in real time. Copy their strategy with one click.' },
@@ -387,5 +388,7 @@ export default function Landing() {
         </p>
       </footer>
     </div>
+
+
   )
 }

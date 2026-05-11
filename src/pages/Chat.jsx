@@ -12,6 +12,9 @@ import SmartMoneyCard from '../components/SmartMoneyCard'
 import { jsPDF } from 'jspdf'
 import TokenSecurityCard from '../components/TokenSecurityCard'
 
+
+
+
 const WELCOME_MESSAGE = {
   id: 1,
   role: 'ai',
@@ -65,6 +68,9 @@ export default function Chat() {
   const [zapOutLoading, setZapOutLoading] = useState(false)
   const [zapOutSuccess, setZapOutSuccess] = useState(false)
   const [solPrice, setSolPrice] = useState(null)
+
+
+
 
   // ── Settings Persistence ──────────────────────────────────────────────────
   const [darkMode, setDarkMode] = useState(() => {
@@ -219,6 +225,15 @@ export default function Chat() {
     const interval = setInterval(fetchPrice, 30000)
     return () => clearInterval(interval)
   }, [])
+
+  useEffect(() => {
+    const runHealthCheck = async () => {
+      const { healthCheck } = await import('../services/lpAgent')
+      await healthCheck()
+    }
+    runHealthCheck()
+  }, [])
+
 
   const handleNewChat = () => {
     const newId = Date.now()
@@ -485,6 +500,8 @@ export default function Chat() {
       // Step 1: Discover Pools
       const pools = await fetchTopPools(risk)
       
+
+      
       /* Temporarily disabled — Birdeye rate limiting causing LP Agent fallback
       const enrichPool = async (pool) => {
         ...
@@ -529,6 +546,8 @@ export default function Chat() {
           )
           lpers = lperResults.filter(Boolean).flat().filter((v, i, a) => v && a.findIndex(t => t?.owner === v.owner) === i)
         } catch (e) {
+
+
           console.error('LP Agent: Whale fetch failed', e)
         }
       }
@@ -1258,6 +1277,8 @@ export default function Chat() {
         />
       )}
     </div>
+
+
   )
 }
 
