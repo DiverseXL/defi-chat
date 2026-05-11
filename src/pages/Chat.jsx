@@ -23,7 +23,8 @@ const WELCOME_MESSAGE = {
 }
 
 export default function Chat() {
-  const { connected, publicKey, sendTransaction, signTransaction } = useWallet()
+  const { connected, publicKey, sendTransaction, signTransaction, disconnect } = useWallet()
+
   const { connection } = useConnection()
   const walletKey = publicKey?.toString() || 'guest'
 
@@ -1224,9 +1225,25 @@ export default function Chat() {
               {/* Divider */}
               <div style={{ borderTop: `1px solid ${t.dividerSetting}` }} />
 
-              {/* Danger Zone */}
               <div className="flex flex-col gap-4">
                 <h3 className="text-xs font-bold uppercase tracking-widest text-red-500">Danger Zone</h3>
+
+                {/* Disconnect Wallet */}
+                {connected && (
+                  <button
+                    onClick={() => {
+                      disconnect()
+                      setShowSettings(false)
+                    }}
+                    className="w-full py-4 rounded-full text-xs font-bold uppercase tracking-wide transition-all hover:bg-red-500/10 flex items-center justify-center gap-2"
+                    style={{ border: '1px solid rgba(255,0,0,0.2)', color: '#ef4444' }}
+                  >
+                    <span className="material-symbols-outlined" style={{ fontSize: 16 }}>logout</span>
+                    Disconnect Wallet
+                  </button>
+                )}
+
+                {/* Clear Chat History */}
                 <button
                   onClick={() => {
                     const newId = Date.now()
@@ -1242,6 +1259,7 @@ export default function Chat() {
                   Clear All Chat History
                 </button>
               </div>
+
 
             </div>
 
