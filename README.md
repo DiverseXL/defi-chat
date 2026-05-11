@@ -1,4 +1,4 @@
-# DeFi-Chat 🤖
+# DeFi-Chat
 
 > **The AI Agent that executes DeFi from plain English.**
 
@@ -8,7 +8,7 @@ Built for the **LP Agent Hackathon** — leveraging LP Agent's data infrastructu
 
 ---
 
-## 🎯 The Problem
+## The Problem
 
 Providing liquidity on Solana requires:
 
@@ -21,7 +21,7 @@ Providing liquidity on Solana requires:
 
 ---
 
-## 💡 The Solution
+## The Solution
 
 ```
 User types: "I have 1 SOL and want the highest yield with low risk"
@@ -34,16 +34,16 @@ AI recommends optimal strategy with full explanation
          ↓
 User clicks "Execute" → signs ONE transaction
          ↓
-Liquidity deployed on Meteora ✅
+Liquidity deployed on Meteora
 ```
 
 **Complex DeFi → Plain English → One Signature**
 
 ---
 
-## ✨ Features
+## Features
 
-### 🧠 Intent Detection
+### Intent Detection
 
 The AI automatically detects what the user wants and responds with the right action:
 
@@ -54,32 +54,32 @@ The AI automatically detects what the user wants and responds with the right act
 | "What are whales doing?"             | Returns Smart Money Card with top LPer data     |
 | "What is impermanent loss?"          | Explains clearly with examples                  |
 
-### ⚡ One-Click Execution
+### One-Click Execution
 
 - Multi-step DeFi operations bundled into one signature
 - Zap In and Zap Out powered by LP Agent API
 - Jupiter Ultra routing for optimal swap prices
 
-### 🔍 Token Security
+### Token Security
 
 - Automatic Birdeye security check before every execution
 - Holder concentration analysis
 - Freeze/mint authority detection
 - Risk level assessment (Low/Medium/High)
 
-### 🐋 Smart Money Tracking
+### Smart Money Tracking
 
 - Real-time top LPer wallet data from LP Agent
 - See what the best performers are investing in
 - One-click copy strategy
 
-### 📊 Live Market Data
+### Live Market Data
 
 - Real-time SOL price from Jupiter API
 - Live pool TVL and 24h volume from LP Agent
 - Live/Demo mode indicator
 
-### 💬 Full Chat Experience
+### Full Chat Experience
 
 - ChatGPT-style interface optimized for DeFi
 - Persistent chat history per wallet address
@@ -87,7 +87,7 @@ The AI automatically detects what the user wants and responds with the right act
 - Word-by-word AI response streaming
 - Mobile responsive with hamburger sidebar
 
-### 🔐 Wallet Integration
+### Wallet Integration
 
 - Phantom and Solflare support
 - Non-custodial — read-only mode available without connecting
@@ -95,7 +95,7 @@ The AI automatically detects what the user wants and responds with the right act
 
 ---
 
-## 🛠️ Tech Stack
+## Tech Stack
 
 | Layer          | Technology                                 |
 | -------------- | ------------------------------------------ |
@@ -111,7 +111,7 @@ The AI automatically detects what the user wants and responds with the right act
 
 ---
 
-## 🔗 LP Agent API Integration
+## LP Agent API Integration
 
 DeFi-Chat uses the following LP Agent endpoints:
 
@@ -120,10 +120,10 @@ GET  /pools/discover              → Fetch top Meteora pools by volume
 GET  /pools/{poolId}/top-lpers    → Smart Money tracking
 GET  /lp-positions/opening        → User's open positions
 GET  /lp-positions/overview       → Portfolio metrics
-POST /pools/{poolId}/add-tx       → Zap In transaction generation ⭐
+POST /pools/{poolId}/add-tx       → Zap In transaction generation
 POST /pools/{poolId}/landing-add-tx → Submit signed Zap In
 POST /position/decrease-quotes    → Zap Out quote
-POST /position/decrease-tx        → Zap Out transaction generation ⭐
+POST /position/decrease-tx        → Zap Out transaction generation
 POST /position/landing-decrease-tx → Submit signed Zap Out
 ```
 
@@ -143,7 +143,7 @@ User signs → transaction lands on Solana
 
 ---
 
-## 🚀 Getting Started
+## Getting Started
 
 ### Prerequisites
 
@@ -186,7 +186,7 @@ Open http://localhost:5173
 
 ---
 
-## 🎮 How to Use
+## How to Use
 
 ### Try these prompts:
 
@@ -222,7 +222,7 @@ Explain impermanent loss and how to minimize it
 
 ---
 
-## 📁 Project Structure
+## Project Structure
 
 ```
 defi-chat/
@@ -250,41 +250,41 @@ defi-chat/
 
 ---
 
-## 🏆 Why DeFi-Chat Wins
+## Why DeFi-Chat Wins
 
-### Fulfillment of Requirements (40%)
+### Fulfillment of Requirements
 
-- ✅ Uses 9+ LP Agent endpoints
-- ✅ Zap In confirmed working (Phantom popup with real transaction)
-- ✅ Zap Out implemented
-- ✅ Clear demo of LP Agent usage throughout entire UX
+- Uses 9+ LP Agent endpoints
+- Zap In confirmed working (Phantom popup with real transaction)
+- Zap Out implemented
+- Clear demo of LP Agent usage throughout entire UX
 
-### Quality/Effectiveness of LP Agent Use (20%)
+### Quality/Effectiveness of LP Agent Use
 
-- ✅ Real pool data powers every AI response
-- ✅ Pool IDs flow directly from API → AI → Transaction
-- ✅ Top LPer data used for Smart Money feature
-- ✅ Portfolio overview from LP Agent displayed to users
+- Real pool data powers every AI response
+- Pool IDs flow directly from API -> AI -> Transaction
+- Top LPer data used for Smart Money feature
+- Portfolio overview from LP Agent displayed to users
 
-### Creativity & User Experience (30%)
+### Creativity & User Experience
 
-- ✅ Intent-based natural language interface — nobody else is doing this
-- ✅ Three card types adapting to user intent
-- ✅ Mobile responsive with full sidebar navigation
-- ✅ Wallet-scoped persistent chat history
-- ✅ Token security check before every transaction
-- ✅ Animated landing page with live typewriter demos
+- Intent-based natural language interface — nobody else is doing this
+- Three card types adapting to user intent
+- Mobile responsive with full sidebar navigation
+- Wallet-scoped persistent chat history
+- Token security check before every transaction
+- Animated landing page with live typewriter demos
 
-### Innovation (10%)
+### Innovation
 
-- ✅ "Say it → Sign once → Done" — genuinely new DeFi UX paradigm
-- ✅ AI agent that detects intent and routes to correct on-chain action
-- ✅ Smart Money tracking inside a conversational interface
-- ✅ Multi-API intelligence (LP Agent + Birdeye + Jupiter) unified under one chat
+- "Say it -> Sign once -> Done" — genuinely new DeFi UX paradigm
+- AI agent that detects intent and routes to correct on-chain action
+- Smart Money tracking inside a conversational interface
+- Multi-API intelligence (LP Agent + Birdeye + Jupiter) unified under one chat
 
 ---
 
-## 🌐 Links
+## Links
 
 - **Live Demo**: https://defi-chat.vercel.app
 - **LP Agent**: https://lpagent.io
@@ -293,7 +293,7 @@ defi-chat/
 
 ---
 
-## 📄 License
+## License
 
 MIT License — feel free to fork and build on top of this.
 
@@ -301,4 +301,4 @@ MIT License — feel free to fork and build on top of this.
 
 > _"We believe AI Agents will be the next huge wave"_ — LP Agent
 >
-> DeFi-Chat is that wave. 🌊
+> DeFi-Chat is that wave.
