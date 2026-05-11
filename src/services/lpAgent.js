@@ -1,4 +1,4 @@
-const BASE_URL = 'https://api.lpagent.io/open-api/v1'
+const BASE_URL = '/lp-api/open-api/v1'
 const API_KEY = import.meta.env.VITE_LP_AGENT_KEY
 
 const CACHE_DURATION = 5 * 60 * 1000 // 5 minutes
