@@ -266,35 +266,42 @@ export default function Chat() {
       if (result?.error) throw new Error(result.error)
       if (!result) throw new Error('Failed to generate transaction payloads.')
 
-      // Step 2: Signing Loop
-      const { Transaction, VersionedTransaction } = await import('@solana/web3.js')
-      const signTxs = async (base64List) => {
-        if (!base64List?.length) return []
-        const signed = []
-        for (const b64 of base64List) {
-          const buf = Buffer.from(b64, 'base64')
-          let tx
-          try { tx = VersionedTransaction.deserialize(buf) } 
-          catch { tx = Transaction.from(buf) }
-          const s = await signTransaction(tx)
-          signed.push(s.serialize().toString('base64'))
-        }
-        return signed
+      // Step 2 — Signing & Submission Loop
+      const allTxs = [
+        ...(result.swapTxsWithJito || []),
+        ...(result.addLiquidityTxsWithJito || []),
+      ]
+
+      if (!allTxs.length) {
+        alert('No transactions returned from LP Agent.')
+        setZapLoading(false)
+        return
       }
 
-      const [signedSwap, signedLiq] = await Promise.all([
-        signTxs(result.swapTxsWithJito),
-        signTxs(result.addLiquidityTxsWithJito)
-      ])
+      const { Connection, VersionedTransaction, Transaction } = await import('@solana/web3.js')
+      const connection = new Connection('https://api.mainnet-beta.solana.com', 'confirmed')
 
-      // Step 3: Broadcast via Jito Relayer
-      const submission = await submitZapIn({
-        lastValidBlockHeight: result.lastValidBlockHeight,
-        swapTxsWithJito: signedSwap,
-        addLiquidityTxsWithJito: signedLiq
-      })
+      for (const txBase64 of allTxs) {
+        try {
+          const txBuffer = Buffer.from(txBase64, 'base64')
+          let tx
+          try {
+            tx = VersionedTransaction.deserialize(txBuffer)
+          } catch {
+            tx = Transaction.from(txBuffer)
+          }
+          const signature = await sendTransaction(tx, connection, {
+            skipPreflight: false,
+            maxRetries: 3,
+          })
+          console.log('Transaction signature:', signature)
+          await connection.confirmTransaction(signature, 'confirmed')
+        } catch (err) {
+          console.error('Transaction failed:', err)
+          throw new Error(`Transaction failed: ${err.message}`)
+        }
+      }
 
-      if (!submission) throw new Error('Transaction submission failed at the relayer.')
       setZapSuccess(true)
 
     } catch (err) {
