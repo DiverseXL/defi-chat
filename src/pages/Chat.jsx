@@ -266,40 +266,45 @@ export default function Chat() {
       if (result?.error) throw new Error(result.error)
       if (!result) throw new Error('Failed to generate transaction payloads.')
 
-      // Step 2 — Signing & Submission Loop
+      // Step 2 — Signing & Submission Loop (Aggressive Mode)
+      const { Connection, VersionedTransaction, Transaction } = await import('@solana/web3.js')
+      const connection = new Connection('https://api.mainnet-beta.solana.com', 'confirmed')
+
       const allTxs = [
         ...(result.swapTxsWithJito || []),
         ...(result.addLiquidityTxsWithJito || []),
       ]
 
       if (!allTxs.length) {
-        alert('No transactions returned from LP Agent.')
-        setZapLoading(false)
-        return
+        throw new Error('No transactions returned from LP Agent')
       }
 
-      const { Connection, VersionedTransaction, Transaction } = await import('@solana/web3.js')
-      const connection = new Connection('https://api.mainnet-beta.solana.com', 'confirmed')
+      console.log('Transactions to sign:', allTxs.length)
 
-      for (const txBase64 of allTxs) {
+      for (let i = 0; i < allTxs.length; i++) {
+        const txBase64 = allTxs[i]
+        console.log(`Processing transaction ${i + 1}/${allTxs.length}`)
+
+        const rawBuffer = Buffer.from(txBase64, 'base64')
+        console.log('Buffer created, length:', rawBuffer.length)
+
+        let tx
         try {
-          const txBuffer = Buffer.from(txBase64, 'base64')
-          let tx
-          try {
-            tx = VersionedTransaction.deserialize(txBuffer)
-          } catch {
-            tx = Transaction.from(txBuffer)
-          }
-          const signature = await sendTransaction(tx, connection, {
-            skipPreflight: false,
-            maxRetries: 3,
-          })
-          console.log('Transaction signature:', signature)
-          await connection.confirmTransaction(signature, 'confirmed')
-        } catch (err) {
-          console.error('Transaction failed:', err)
-          throw new Error(`Transaction failed: ${err.message}`)
+          tx = VersionedTransaction.deserialize(rawBuffer)
+          console.log('Deserialized as VersionedTransaction')
+        } catch (e) {
+          console.log('Not versioned, trying legacy:', e.message)
+          tx = Transaction.from(rawBuffer)
+          console.log('Deserialized as Legacy Transaction')
         }
+
+        const signature = await sendTransaction(tx, connection, {
+          skipPreflight: true, // Bypass simulation to allow complex bundles
+          maxRetries: 3,
+        })
+
+        console.log(`Transaction ${i + 1} signature:`, signature)
+        await connection.confirmTransaction(signature, 'confirmed')
       }
 
       setZapSuccess(true)
