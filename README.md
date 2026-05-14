@@ -288,7 +288,7 @@ defi-chat/
 
 ## Links
 
-- **Live Demo**: https://defi-chat.vercel.app
+-
 - **LP Agent**: https://lpagent.io
 - **Meteora**: https://meteora.ag
 - **Built by**: [@theyclonedsam](https://twitter.com/theyclonedsam)
