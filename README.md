@@ -6,6 +6,8 @@ DeFi-Chat is an intent-based AI agent for Meteora liquidity pools on Solana. Ins
 
 Built for the **LP Agent Hackathon** — leveraging LP Agent's data infrastructure to power the next generation of DeFi UX.
 
+**Live Demo:** [https://defi-chat-xi.vercel.app/](https://defi-chat-xi.vercel.app/)
+
 ---
 
 ## The Problem
